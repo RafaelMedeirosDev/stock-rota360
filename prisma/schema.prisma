@@ -1,8 +1,128 @@
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+}
+
+enum PRODUCT_CATEGORY {
+  BEVERAGES
+  BEER
+  DRINK
+  SHOT
+  PORTION
+  SNACK
+  SANDWICHE
+  SKEWER
+  DESSERT
+  SOUP
+  ADDITIONAL_SAUCE
+}
+
+enum PRODUCT_TYPE{
+  RESELL
+  PREPARED
+}
+
+enum MOVEMENT_TYPE{
+  ENTRY
+  EXIT
+  ADJUST
+}
+
+enum UNIT_TYPE{
+  KG
+  G
+  L
+  ML
+  UNIT
+}
+
+enum ROLE{
+  ADMIN
+  USEREMPLOYEE
+}
+
+model Product {
+  id               String    @id @default(uuid()) @db.Uuid()
+  name             String
+  variant          String?
+  measurementValue Int?
+  measurementUnit  UNIT_TYPE?
+  type             PRODUCT_TYPE
+  category         PRODUCT_CATEGORY
+  minStock         Int?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @default(now()) @updatedAt
+  deletedAt        DateTime?
+}
+
+model Movement {
+  id        String    @id @default(uuid()) @db.Uuid()
+  type      MOVEMENT_TYPE
+  productId String    @db.Uuid()
+  quantity  Int
+  uniCost  Decimal? @db.Decimal(10, 2)
+  unitSalePrice  Decimal? @db.Decimal(10, 2)
+  userId    String    @db.Uuid()
+  description String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model SUPPLY {
+  id        String    @id @default(uuid()) @db.Uuid()
+  name      String
+  unitType  UNIT_TYPE
+  minStock  Int?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model RECIPT_ITEM{
+  id        String    @id @default(uuid()) @db.Uuid()
+  productId String    @db.Uuid()
+  supplyId  String    @db.Uuid()
+  quantity  Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model SUPPLY_MOVEMENT{
+  id        String    @id @default(uuid()) @db.Uuid()
+  type      MOVEMENT_TYPE
+  supplyId  String    @db.Uuid()
+  quantity  Int
+  uniCost  Decimal? @db.Decimal(10, 2)
+  userId    String    @db.Uuid()
+  description String?
+  originMovementId String?  @db.Uuid()
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model User {
+  id        String   @id @default(uuid()) @db.Uuid()
+  name      String
+  cpf       String   @unique
+  credentialId String   @db.Uuid()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
+}
+
+model Credential {
+  id        String   @id @default(uuid()) @db.Uuid()
+  email     String   @unique
+  passwordHash  String
+  role      ROLE     
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+  deletedAt DateTime?
 }
