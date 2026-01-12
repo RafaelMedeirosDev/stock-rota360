@@ -1,38 +1,38 @@
-
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum PRODUCT_CATEGORY {
-  BEVERAGES
+  BEVERAGE
   BEER
   DRINK
   SHOT
   PORTION
   SNACK
-  SANDWICHE
+  SANDWICH
   SKEWER
   DESSERT
   SOUP
   ADDITIONAL_SAUCE
 }
 
-enum PRODUCT_TYPE{
+enum PRODUCT_TYPE {
   RESELL
   PREPARED
 }
 
-enum MOVEMENT_TYPE{
+enum MOVEMENT_TYPE {
   ENTRY
   EXIT
   ADJUST
 }
 
-enum UNIT_TYPE{
+enum UNIT_TYPE {
   KG
   G
   L
@@ -40,13 +40,13 @@ enum UNIT_TYPE{
   UNIT
 }
 
-enum ROLE{
+enum ROLE {
   ADMIN
-  USEREMPLOYEE
+  EMPLOYEE
 }
 
 model Product {
-  id               String    @id @default(uuid()) @db.Uuid()
+  id               String           @id @default(uuid()) @db.Uuid()
   name             String
   variant          String?
   measurementValue Int?
@@ -54,26 +54,32 @@ model Product {
   type             PRODUCT_TYPE
   category         PRODUCT_CATEGORY
   minStock         Int?
-  createdAt        DateTime             @default(now())
-  updatedAt        DateTime             @default(now()) @updatedAt
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @default(now()) @updatedAt
   deletedAt        DateTime?
+
+  @@map("product")
 }
 
 model Movement {
-  id        String    @id @default(uuid()) @db.Uuid()
-  type      MOVEMENT_TYPE
-  productId String    @db.Uuid()
-  quantity  Int
-  uniCost  Decimal? @db.Decimal(10, 2)
-  unitSalePrice  Decimal? @db.Decimal(10, 2)
-  userId    String    @db.Uuid()
-  description String?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  deletedAt DateTime?
+  id            String        @id @default(uuid()) @db.Uuid()
+  type          MOVEMENT_TYPE
+  productId     String        @db.Uuid()
+  quantity      Int
+  uniCost       Decimal?      @db.Decimal(10, 2)
+  unitSalePrice Decimal?      @db.Decimal(10, 2)
+  userId        String        @db.Uuid()
+  description   String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now()) @updatedAt
+  deletedAt     DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("movement")
 }
 
-model SUPPLY {
+model Supply {
   id        String    @id @default(uuid()) @db.Uuid()
   name      String
   unitType  UNIT_TYPE
@@ -81,9 +87,11 @@ model SUPPLY {
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
+
+  @@map("supply")
 }
 
-model RECIPT_ITEM{
+model RecipItem {
   id        String    @id @default(uuid()) @db.Uuid()
   productId String    @db.Uuid()
   supplyId  String    @db.Uuid()
@@ -91,38 +99,55 @@ model RECIPT_ITEM{
   createdAt DateTime  @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
+
+  @@map("recip_item")
 }
 
-model SUPPLY_MOVEMENT{
-  id        String    @id @default(uuid()) @db.Uuid()
-  type      MOVEMENT_TYPE
-  supplyId  String    @db.Uuid()
-  quantity  Int
-  uniCost  Decimal? @db.Decimal(10, 2)
-  userId    String    @db.Uuid()
-  description String?
-  originMovementId String?  @db.Uuid()
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now()) @updatedAt
-  deletedAt DateTime?
+model SupplyMovement {
+  id               String        @id @default(uuid()) @db.Uuid()
+  type             MOVEMENT_TYPE
+  supplyId         String        @db.Uuid()
+  quantity         Int
+  uniCost          Decimal?      @db.Decimal(10, 2)
+  userId           String        @db.Uuid()
+  description      String?
+  originMovementId String?       @db.Uuid()
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @default(now()) @updatedAt
+  deletedAt        DateTime?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("supply_movement")
 }
 
 model User {
-  id        String   @id @default(uuid()) @db.Uuid()
-  name      String
-  cpf       String   @unique
-  credentialId String   @db.Uuid()
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  deletedAt DateTime?
+  id           String    @id @default(uuid()) @db.Uuid()
+  name         String
+  cpf          String    @unique
+  credentialId String    @db.Uuid()
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+
+  credential Credential @relation(fields: [credentialId], references: [id])
+
+  movements       Movement[]
+  supplyMovements SupplyMovement[]
+
+  @@map("user")
 }
 
 model Credential {
-  id        String   @id @default(uuid()) @db.Uuid()
-  email     String   @unique
-  passwordHash  String
-  role      ROLE     
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
-  deletedAt DateTime?
+  id           String    @id @default(uuid()) @db.Uuid()
+  email        String    @unique
+  passwordHash String
+  role         ROLE
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @default(now()) @updatedAt
+  deletedAt    DateTime?
+
+  users User[]
+
+  @@map("credential")
 }
