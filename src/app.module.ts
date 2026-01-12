@@ -10,17 +10,25 @@ import { CreateUserUseCase } from './usecases/user/CreateUserUseCase';
 import { CreateCredentialUseCase } from './usecases/credential/CreateCredentialUseCase';
 import { PrismaUserRepository } from './external/repositories/remote/PrismaUserRepository';
 import { PrismaCredentialRepository } from './external/repositories/remote/PrismaCredentialRepository';
+import { LoginUseCase } from './usecases/LoginUseCase.ts/LoginUseCase';
+import { AuthController } from './controllers/AuthController';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       envFilePath: ['.env'],
       isGlobal: true,
-    })
+    }),
+    JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: { expiresIn: '1d' },
+    }),
   ],
   controllers: [
     AppController,
-    UserController
+    UserController,
+    AuthController
   ],
   providers: [
     AppService,
@@ -34,7 +42,8 @@ import { PrismaCredentialRepository } from './external/repositories/remote/Prism
       useClass: PrismaCredentialRepository
     },
     CreateUserUseCase,
-    CreateCredentialUseCase
+    CreateCredentialUseCase,
+    LoginUseCase
   ],
 })
 export class AppModule {}

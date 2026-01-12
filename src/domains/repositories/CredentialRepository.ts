@@ -1,4 +1,4 @@
-import { ROLE } from '@prisma/client';
+import { ROLE,Credential } from '@prisma/client';
 
 export interface CreateCredential {
     email: string;
