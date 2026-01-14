@@ -10,9 +10,13 @@ import { CreateUserUseCase } from './usecases/user/CreateUserUseCase';
 import { CreateCredentialUseCase } from './usecases/credential/CreateCredentialUseCase';
 import { PrismaUserRepository } from './external/repositories/remote/PrismaUserRepository';
 import { PrismaCredentialRepository } from './external/repositories/remote/PrismaCredentialRepository';
-import { LoginUseCase } from './usecases/LoginUseCase.ts/LoginUseCase';
+import { LoginUseCase } from './usecases/login/LoginUseCase';
 import { AuthController } from './controllers/AuthController';
 import { JwtModule } from '@nestjs/jwt';
+import { ProductController } from './controllers/ProductController';
+import { CreateProductUseCase } from './usecases/product/CreateProductUseCase';
+import { PrismaProductRepository } from './external/repositories/remote/PrismaProductRepository';
+import { ProductRepository } from './domains/repositories/ProductRepository';
 
 @Module({
   imports: [
@@ -28,7 +32,8 @@ import { JwtModule } from '@nestjs/jwt';
   controllers: [
     AppController,
     UserController,
-    AuthController
+    AuthController,
+    ProductController
   ],
   providers: [
     AppService,
@@ -41,9 +46,14 @@ import { JwtModule } from '@nestjs/jwt';
       provide: CredentialRepository,
       useClass: PrismaCredentialRepository
     },
+    {
+      provide: ProductRepository,
+      useClass: PrismaProductRepository
+    },
     CreateUserUseCase,
     CreateCredentialUseCase,
-    LoginUseCase
+    LoginUseCase,
+    CreateProductUseCase
   ],
 })
 export class AppModule {}
