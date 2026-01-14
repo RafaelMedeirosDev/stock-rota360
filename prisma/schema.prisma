@@ -59,6 +59,7 @@ model Product {
   deletedAt        DateTime?
 
   @@map("product")
+  @@unique([name, measurementValue, measurementUnit])
 }
 
 model Movement {
