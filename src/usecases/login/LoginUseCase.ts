@@ -5,6 +5,8 @@ import * as bcrypt from 'bcrypt';
 import { UserNotFound } from "src/shared/errors/cases/UserNotFound";
 import { WrongPasswordOrEmail } from "src/shared/errors/cases/WrongPasswprdOrEmail";
 import { JwtService } from "@nestjs/jwt";
+import { User } from "@prisma/client";
+import { UserRepository } from "src/domains/repositories/UserRepository";
 
 interface Request {
   email: string;
@@ -17,27 +19,35 @@ type Response = TokenDTO;
 export class LoginUseCase {
   constructor (
       private readonly credentialRepository: CredentialRepository,
+      private readonly userRepository: UserRepository,
       private jwtService: JwtService
   ){}
 
   async execute({email, passwordHash}: Request): Promise<Response> {
-    const user = await this.credentialRepository.findByEmail({email});
+    const credential = await this.credentialRepository.findByEmail({email});
 
-    if(!user) {
+    if(!credential) {
         throw new UserNotFound();
     }
 
-    const isMatch = await bcrypt.compare(passwordHash, user.passwordHash);
+    const isMatch = await bcrypt.compare(passwordHash, credential.passwordHash);
 
     if(!isMatch) {
       throw new WrongPasswordOrEmail();
     }
 
+    const user = await this.userRepository.findByCredentialId({
+      credentialId: credential.id
+    });
+    if(!user) {
+      throw new UserNotFound();
+    }
+
     return {
       accessToken: await this.jwtService.signAsync({
           userId: user.id,
-          name: user.email,
-           role: user.role
+          name: credential.email,
+           role: credential.role
       })
       }
     }

@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { UserController } from './controllers/UserController';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { PrismaRemoteRepository } from './external/repositories/remote/PrismaRemoteRepository';
 import { UserRepository } from './domains/repositories/UserRepository';
 import { CredentialRepository } from './domains/repositories/CredentialRepository';
@@ -17,6 +17,13 @@ import { ProductController } from './controllers/ProductController';
 import { CreateProductUseCase } from './usecases/product/CreateProductUseCase';
 import { PrismaProductRepository } from './external/repositories/remote/PrismaProductRepository';
 import { ProductRepository } from './domains/repositories/ProductRepository';
+import { MovementController } from './controllers/MovementController';
+import { MovementRepository } from './domains/repositories/MovementRepository';
+import { PrismaMovementRepository } from './external/repositories/remote/PrismaMovementRepository';
+import { CreateMovementUseCase } from './usecases/movement/CreateMovementUseCase';
+import { PassportModule } from '@nestjs/passport';
+import { JwtStrategy } from './shared/strategies/JwtStrategyUseCase';
+
 
 @Module({
   imports: [
@@ -24,16 +31,21 @@ import { ProductRepository } from './domains/repositories/ProductRepository';
       envFilePath: ['.env'],
       isGlobal: true,
     }),
-    JwtModule.register({
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1d' },
+    JwtModule.registerAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.getOrThrow<string>('JWT_SECRET'),
+        signOptions: { expiresIn: '1d' },
+      }),
+      
     }),
   ],
   controllers: [
     AppController,
     UserController,
     AuthController,
-    ProductController
+    ProductController,
+    MovementController
   ],
   providers: [
     AppService,
@@ -50,10 +62,16 @@ import { ProductRepository } from './domains/repositories/ProductRepository';
       provide: ProductRepository,
       useClass: PrismaProductRepository
     },
+    {
+      provide: MovementRepository,
+      useClass: PrismaMovementRepository
+    },
     CreateUserUseCase,
     CreateCredentialUseCase,
     LoginUseCase,
-    CreateProductUseCase
+    CreateProductUseCase,
+    CreateMovementUseCase,
+    JwtStrategy
   ],
 })
 export class AppModule {}
