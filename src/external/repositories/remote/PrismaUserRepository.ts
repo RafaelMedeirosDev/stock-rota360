@@ -1,4 +1,4 @@
-import { CreateUser, FindByCpf, UserRepository } from "src/domains/repositories/UserRepository";
+import { CreateUser, FindByCpf, FindByCredentialId, UserRepository } from "src/domains/repositories/UserRepository";
 import { PrismaRemoteRepository } from "./PrismaRemoteRepository";
 import { User } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
@@ -22,6 +22,14 @@ export class PrismaUserRepository implements UserRepository {
         return this.repository.user.findUnique({
             where: {
                 cpf
+            }
+        });
+    }
+
+    async findByCredentialId({credentialId}: FindByCredentialId): Promise<User | null> {
+        return this.repository.user.findUnique({
+            where: {
+                credentialId
             }
         });
     }
