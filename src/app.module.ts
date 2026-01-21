@@ -21,8 +21,11 @@ import { MovementController } from './controllers/MovementController';
 import { MovementRepository } from './domains/repositories/MovementRepository';
 import { PrismaMovementRepository } from './external/repositories/remote/PrismaMovementRepository';
 import { CreateMovementUseCase } from './usecases/movement/CreateMovementUseCase';
-import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './shared/strategies/JwtStrategyUseCase';
+import { SupplyMovementController } from './controllers/SupplyMovementController';
+import { PrismaSupplyMovementRepository } from './external/repositories/remote/PrismaSupplyMovementRepository';
+import { SupplyMovementRepository } from './domains/repositories/SupplyMovementRepository';
+import { CreateSupplyMovementUseCase } from './usecases/supplyMovement/CreateSupplyMovementUseCase';
 import { SupplyController } from './controllers/SupplyController';
 import { SupplyRepository } from './domains/repositories/SupplyRepository';
 import { PrismaSupplyRepository } from './external/repositories/remote/PrismaSupplyRepository';
@@ -50,7 +53,8 @@ import { CreateSupplyUseCase } from './usecases/supply/CreateSupplyUseCase';
     AuthController,
     ProductController,
     MovementController,
-    SupplyController
+    SupplyController,
+    SupplyMovementController
   ],
   providers: [
     AppService,
@@ -75,13 +79,18 @@ import { CreateSupplyUseCase } from './usecases/supply/CreateSupplyUseCase';
       provide: SupplyRepository,
       useClass: PrismaSupplyRepository
     },
+    {
+      provide: SupplyMovementRepository,
+      useClass: PrismaSupplyMovementRepository
+    },
     CreateUserUseCase,
     CreateCredentialUseCase,
     LoginUseCase,
     CreateProductUseCase,
     CreateMovementUseCase,
     JwtStrategy,
-    CreateSupplyUseCase
+    CreateSupplyUseCase,
+    CreateSupplyMovementUseCase
   ],
 })
 export class AppModule {}
