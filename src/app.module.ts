@@ -30,6 +30,10 @@ import { SupplyController } from './controllers/SupplyController';
 import { SupplyRepository } from './domains/repositories/SupplyRepository';
 import { PrismaSupplyRepository } from './external/repositories/remote/PrismaSupplyRepository';
 import { CreateSupplyUseCase } from './usecases/supply/CreateSupplyUseCase';
+import { RecipItemController } from './controllers/RecipItemController';
+import { RecipItemRepository } from './domains/repositories/RecipItemRepository';
+import { PrismaRecipItemRepository } from './external/repositories/remote/PrismaRecipItemRepository';
+import { CreateRecipItemUseCase } from './usecases/recipItem/CreateRecipItemUseCase';
 
 
 @Module({
@@ -54,7 +58,8 @@ import { CreateSupplyUseCase } from './usecases/supply/CreateSupplyUseCase';
     ProductController,
     MovementController,
     SupplyController,
-    SupplyMovementController
+    SupplyMovementController,
+    RecipItemController
   ],
   providers: [
     AppService,
@@ -83,6 +88,10 @@ import { CreateSupplyUseCase } from './usecases/supply/CreateSupplyUseCase';
       provide: SupplyMovementRepository,
       useClass: PrismaSupplyMovementRepository
     },
+    {
+      provide: RecipItemRepository,
+      useClass: PrismaRecipItemRepository
+    },
     CreateUserUseCase,
     CreateCredentialUseCase,
     LoginUseCase,
@@ -90,7 +99,8 @@ import { CreateSupplyUseCase } from './usecases/supply/CreateSupplyUseCase';
     CreateMovementUseCase,
     JwtStrategy,
     CreateSupplyUseCase,
-    CreateSupplyMovementUseCase
+    CreateSupplyMovementUseCase,
+    CreateRecipItemUseCase
   ],
 })
 export class AppModule {}

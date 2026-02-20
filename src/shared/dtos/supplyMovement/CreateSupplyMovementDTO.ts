@@ -23,5 +23,7 @@ export class CreateSupplyMovementDTO {
     @IsString()
     description?: string;
 
-    originMovementId: string;
+    @IsOptional()
+    @IsUUID()
+    originMovementId?: string;
 }
