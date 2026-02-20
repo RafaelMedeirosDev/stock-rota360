@@ -15,7 +15,7 @@ export interface FindById {
 }
 
 export abstract class SupplyRepository {
-    public abstract create(supply: CreateSupply): Promise<Supply>;
-    public abstract findByName(supply: FindByName): Promise<Supply | null>;
-    public abstract findById(supply: FindById): Promise<Supply | null>;
+    public abstract create({name, unitType, minStock}: CreateSupply): Promise<Supply>;
+    public abstract findByName({name}: FindByName): Promise<Supply | null>;
+    public abstract findById({id}: FindById): Promise<Supply | null>;
 }

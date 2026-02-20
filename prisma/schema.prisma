@@ -108,6 +108,7 @@ model RecipItem {
   updatedAt DateTime  @default(now()) @updatedAt
   deletedAt DateTime?
 
+  @@unique([productId, supplyId])
   @@map("recip_item")
 }
 

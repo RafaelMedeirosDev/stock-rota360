@@ -27,9 +27,10 @@ export class PrismaSupplyRepository implements SupplyRepository {
     }
 
     findById({id}: FindById): Promise<Supply | null> {
-        return this.prisma.supply.findUnique({
+        return this.prisma.supply.findFirst({
             where: {
-                id
+                id,
+                deletedAt: null
             },
         });
     }

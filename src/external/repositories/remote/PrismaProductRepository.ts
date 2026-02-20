@@ -1,4 +1,4 @@
-import { CreateProduct, FindByNameAndMeasure, ProductRepository } from "src/domains/repositories/ProductRepository";
+import { CreateProduct, FindById, FindByNameAndMeasure, ProductRepository } from "src/domains/repositories/ProductRepository";
 import { PrismaRemoteRepository } from "./PrismaRemoteRepository";
 import { Product } from "@prisma/client";
 import { Injectable } from "@nestjs/common";
@@ -35,4 +35,12 @@ export class PrismaProductRepository implements ProductRepository {
         });
     }
 
+    async findById({id}: FindById): Promise<Product | null> {
+        return this.repository.product.findFirst({
+            where: {
+                id,
+                deletedAt: null
+            }
+        })
+    }
 }

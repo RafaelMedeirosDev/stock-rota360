@@ -16,7 +16,12 @@ export interface FindByNameAndMeasure {
     measurementUnit: UNIT_TYPE;
 }
 
+export interface FindById {
+    id: string;
+}
+
 export abstract class ProductRepository {
     public abstract create(product: CreateProduct): Promise<Product>;
     public abstract findByNameAndMeasure(product: FindByNameAndMeasure): Promise<Product | null>;
+    public abstract findById(product: FindById): Promise<Product | null>
 }
